@@ -113,7 +113,6 @@ class Action_replay_buffer:
         :param reward: reward gain
         :param observation: current state
         :param end: is end of the game ?
-        :return:
         """
         self.old_observations[self.cmpt%self.MAX_SIZE] = old_obs
         self.choices[self.cmpt%self.MAX_SIZE] = choice
