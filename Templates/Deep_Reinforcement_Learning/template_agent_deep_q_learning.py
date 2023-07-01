@@ -7,10 +7,10 @@ from tensorflow.keras.models import Sequential
 
 
 class Agent_DQN:
-    def __init__(self,number_element_state, number_action, number_hidden_layer,neurones, gamma,alphan,epsilon,epsi_min,decrease_espilon,buffer_size):
+    def __init__(self,number_element_state, number_action, number_hidden_layer,neurones, gamma,alpha,epsilon,epsi_min,decrease_espilon,buffer_size):
         self.number_action =number_action
         self.buffer_size =buffer_size
-        self.gamme,self.alpha,self.epsilon,self.decrease_espilon = gamma,alphan,epsilon,decrease_espilon
+        self.gamme,self.alpha,self.epsilon,self.decrease_espilon = gamma,alpha,epsilon,decrease_espilon
         self.main_network = self._create_network(number_element_state, number_action, number_hidden_layer,neurones)
         self.target_network = self._create_network(number_element_state, number_action, number_hidden_layer,neurones )
         self.epsi_min = epsi_min
@@ -47,6 +47,11 @@ class Agent_DQN:
         self.action_replay_buffer.add_elem(current_state,new_state,action,reward,done)
 
     def make_choice(self,obs):
+        """
+        Agent choose a ction
+        :param obs:  current state
+        :return: a unique action
+        """
         random_value = random.random()
         if random_value < self.epsilon:
             action = random.choice([*range(self.number_action)])
@@ -55,17 +60,26 @@ class Agent_DQN:
             prediction = self.main_network.predict(obs,verbose=0)
             action = np.argmax(prediction)
 
-
-        self.epsilon = max(self.epsilon * self.decrease_espilon,self.epsi_min)
-
         return action
 
 
     def copy_neuronal_network(self):
+        """
+        Update the wheight of the target with the main network
+        """
         self.target_network.set_weights(self.main_network.get_weights())
 
 
     def _create_network(self, number_element_state, number_action, number_hidden_layer,neurones):
+        """
+        Create a neuronal network
+
+        :param number_element_state: input shape
+        :param number_action: output layer
+        :param number_hidden_layer:
+        :param neurones: number neurone per hidden layer
+        :return:
+        """
         model = Sequential()
         model.add(
             Dense(number_hidden_layer, activation="relu", input_shape=(number_element_state,)))
@@ -74,6 +88,12 @@ class Agent_DQN:
         model.add(Dense(number_action, activation="linear"))
         model.compile(optimizer="adam", loss="huber_loss", metrics=["acc"])
         return model
+
+    def update_epsilon(self):
+        """Update the value of epsilon decay"""
+        if self.epsi_min:
+            self.epsilon = max(self.epsilon * self.decrease_espilon,self.epsi_min)
+
 
 
 class Action_replay_buffer:
@@ -86,6 +106,15 @@ class Action_replay_buffer:
         self.obsersavtions = np.zeros((size,size_state))
         self.ends = np.zeros((size,1))
     def add_elem(self,old_obs, choice, reward, observation,end):
+        """
+        Add a tuple inside the buffer
+        :param old_obs: old state
+        :param choice:  choice made by the agent
+        :param reward: reward gain
+        :param observation: current state
+        :param end: is end of the game ?
+        :return:
+        """
         self.old_observations[self.cmpt%self.MAX_SIZE] = old_obs
         self.choices[self.cmpt%self.MAX_SIZE] = choice
         self.rewards[self.cmpt%self.MAX_SIZE] = reward
@@ -97,7 +126,7 @@ class Action_replay_buffer:
         """
         Create a sample for the batch size
         :param batch_size: number element to take
-        :return: tuple e
+        :return: tuple e = (old_observations_samples,choices_samples,rewards_samples,obsersavtions_samples,ends_samples)
 
         Warning : a verification before need to be to just to check if we have enough element for the batch size
         """

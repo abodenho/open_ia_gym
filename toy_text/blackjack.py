@@ -1,7 +1,6 @@
 import gym
-import time
 from Templates.Reinforcement_Learning.template_agent_q_learning import Agent_q_learning
-from open_gym_IA.toy_text.template_game_toy_text import play_game
+from toy_text.template_game_toy_text import play_game
 
 environement_train = gym.make("Blackjack-v1")
 environement_test = gym.make("Blackjack-v1",render_mode = "human")

@@ -1,6 +1,6 @@
 import gym
 from Templates.Reinforcement_Learning.template_agent_q_learning import Agent_q_learning
-from open_gym_IA.toy_text.template_game_toy_text import play_game
+from toy_text.template_game_toy_text import play_game
 
 environement_train = gym.make("CliffWalking-v0")
 environement_test = gym.make("CliffWalking-v0",render_mode="human")

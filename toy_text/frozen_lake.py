@@ -1,6 +1,6 @@
 import gym
 from Templates.Reinforcement_Learning.template_agent_q_learning import Agent_q_learning
-from open_gym_IA.toy_text.template_game_toy_text import play_game
+from toy_text.template_game_toy_text import play_game
 
 environement_train = gym.make('FrozenLake-v1',desc=None, map_name="4x4", is_slippery=True)
 environement_test = gym.make('FrozenLake-v1',render_mode="human", desc=None, map_name="4x4", is_slippery=True)

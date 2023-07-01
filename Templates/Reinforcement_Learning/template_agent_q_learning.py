@@ -4,7 +4,7 @@ import random
 import numpy as np
 
 class Agent_q_learning:
-    def __init__(self,list_action,univers,gamma,alpha,epsilon,decrease_espilon = None):
+    def __init__(self,list_action,univers,gamma,alpha,epsilon,epsilon_min = None, decrease_espilon = None):
         """
         :param list_action: liste des différents actions (int)
 
@@ -24,6 +24,7 @@ class Agent_q_learning:
         self.gamme = gamma
         self.alpha = alpha
         self.epsilon = epsilon
+        self.epsilon_min = epsilon_min
         self.decrease_espilon = decrease_espilon
         self.number_action = len(list_action)
         self._create_q_table()
@@ -56,10 +57,14 @@ class Agent_q_learning:
                 elif self._go_through_state(current_state)[i] == best_value:
                     action.append(i)
 
-        self.epsilon = self.epsilon * self.decrease_espilon
         rep = random.choice(action)
 
         return rep
+
+    def update_episode(self):
+        if self.epsilon_min:
+            self.epsilon = max(self.epsilon * self.decrease_espilon,self.epsilon_min)
+
 
     def learn(self,current_state,new_state,action,reward,done):
         current_state = self.convert_state(current_state)
